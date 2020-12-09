@@ -141,8 +141,8 @@ namespace OneNET {
     }
 	/**
      * 初始化WIFI模块的串口
-     * @param tx ; eg: SerialPin.P1
-     * @param rx ; eg: SerialPin.P2
+     * @param tx ; eg: SerialPin.P13
+     * @param rx ; eg: SerialPin.P14
     */
     //% block="初始化WIFI模块的串口 TX：$tx RX：$rx"
     export function WIFI_init(tx: SerialPin, rx: SerialPin): void {
