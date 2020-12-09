@@ -18,57 +18,7 @@ namespace OneNET {
     let wifi_conneted: () => void = null;
     let mqtt_conneted: () => void = null;
     let mqtt_received: () => void = null;
-    /**
-     * 初始化WIFI模块的串口
-     * @param tx ; eg: SerialPin.P1
-     * @param rx ; eg: SerialPin.P2
-    */
-    //% block="初始化WIFI模块的串口 TX：$tx RX：$rx"
-    export function WIFI_init(tx: SerialPin, rx: SerialPin): void {
-        serial.redirect(
-            tx,
-            rx,
-            BaudRate.BaudRate115200
-        )
-        basic.pause(100)
-    }
-    /**
-     * 连接WIFI
-     * @param ssid ; eg: "WIFI"
-     * @param pass ; eg: "12345678"
-    */
-    //% block="连接WIFI 名称：$ssid 密码：$pass"
-    export function WIFI_connect(ssid: string, pass: string): void {
-        basic.pause(50)
-        let cmd: string = "AT+XMU_WIFI=" + ssid + ',' + pass + '\n'
-        serial.writeString(cmd)
-        basic.pause(50)
-    }
-
-    /**
-     * 连接OneNET
-     * @param product_id ; eg: "123456"
-     * @param machine_id ; eg: "123456789"
-     * @param pass ; eg: "1234"
-    */
-    //% block="连接OneNET 产品ID：$product_id 设备ID：$machine_id 鉴权信息：$pass"
-    export function OneNET_connect(product_id: string, machine_id: string, pass: string): void {
-        let cmd: string = "AT+ONENET=" + product_id + ',' + machine_id + ',' + pass + '\n'
-        is_mqtt_conneted = false
-        serial.writeString(cmd)
-        basic.pause(50)
-    }
-    /**
-     * 向OneNET发送信息
-     * @param data_id ; eg: "temp"
-     * @param data_value ; eg: "28.5"
-    */
-    //% block="向OneNET发送信息 数据流名称：$data_id 内容：$data_value"
-    export function OneNET_send(data_id: string, data_value: string): void {
-        let cmd: string = "AT+ON_SEND=" + data_id + ',' + data_value + '\n'
-        serial.writeString(cmd)
-        basic.pause(50)
-    }
+    
 
     serial.onDataReceived('\n', function () {
         serial_read = serial.readString()
@@ -95,43 +45,7 @@ namespace OneNET {
             }
         }
     })
-
-    /**
-     * WIFI连接成功
-     * @param handler WIFI connected callback
-    */
-    //% block="WIFI连接成功"
-    export function on_wifi_connected(handler: () => void): void {
-        wifi_conneted = handler;
-    }
-
-    /**
-     * OneNET连接成功
-     * @param handler MQTT connected callback
-    */
-    //% block="OneNET连接成功"
-    export function on_mqtt_connected(handler: () => void): void {
-        mqtt_conneted = handler;
-    }
-
-    /**
-     * On 收到OneNET的命令
-     * @param handler MQTT receiveed callback
-    */
-    //% block="当收到命令时"
-    export function on_mqtt_receiveed(handler: () => void): void {
-        mqtt_received = handler;
-    }
-
-    //% block="收到的命令"
-    export function get_value(): string {
-        return receive_value;
-    }
-
-    //% block="连接到服务器成功"
-    export function is_connected(): boolean {
-        return is_mqtt_conneted;
-    }
+ 
 	
 	/**
      * 向另一个设备发送信息
@@ -140,8 +54,8 @@ namespace OneNET {
     */
     //% block="向另一个设备发送信息 话题名称：$data_id 内容：$data_value"
     export function OneNET_publish(data_id: string, data_value: string): void {
-        let cmd: string = "AT+PUBLISH=" + data_id + ',' + data_value + '\n'
-        serial.writeString(cmd)
+        let cmd: string = "AT+PUBLISH=" + data_id + ',' + data_value
+        serial.writeLine(cmd)
         basic.pause(50)
     }
 	
@@ -151,16 +65,100 @@ namespace OneNET {
     */
     //% block="开启接收另一个设备的信息 话题名称：$data_id"
     export function OneNET_subscribe(data_id: string): void {
-        let cmd: string = "AT+SUBSCRIBE=" + data_id + '\n'
-        serial.writeString(cmd)
+        let cmd: string = "AT+SUBSCRIBE=" + data_id
+        serial.writeLine(cmd)
         basic.pause(50)
+    }
+	//% block="连接到服务器成功"
+    export function is_connected(): boolean {
+        return is_mqtt_conneted;
+    }
+	//% block="收到的命令"
+    export function get_value(): string {
+        return receive_value;
+    }
+	
+	/**
+     * On 收到OneNET的命令
+     * @param handler MQTT receiveed callback
+    */
+    //% block="当收到命令时"
+    export function on_mqtt_receiveed(handler: () => void): void {
+        mqtt_received = handler;
+    }
+	/**
+     * OneNET连接成功
+     * @param handler MQTT connected callback
+    */
+    //% block="OneNET连接成功"
+    export function on_mqtt_connected(handler: () => void): void {
+        mqtt_conneted = handler;
+    }
+	/**
+     * WIFI连接成功
+     * @param handler WIFI connected callback
+    */
+    //% block="WIFI连接成功"
+    export function on_wifi_connected(handler: () => void): void {
+        wifi_conneted = handler;
+    }
+	/**
+     * 向OneNET发送信息
+     * @param data_id ; eg: "temp"
+     * @param data_value ; eg: "28.5"
+    */
+    //% block="向OneNET发送信息 数据流名称：$data_id 内容：$data_value"
+    export function OneNET_send(data_id: string, data_value: string): void {
+        let cmd: string = "AT+ON_SEND=" + data_id + ',' + data_value
+        serial.writeLine(cmd)
+        basic.pause(50)
+    }
+	
+	/**
+     * 连接OneNET
+     * @param product_id ; eg: "123456"
+     * @param machine_id ; eg: "123456789"
+     * @param pass ; eg: "1234"
+    */
+    //% block="连接OneNET 产品ID：$product_id 设备ID：$machine_id 鉴权信息：$pass"
+    export function OneNET_connect(product_id: string, machine_id: string, pass: string): void {
+        let cmd: string = "AT+ONENET=" + product_id + ',' + machine_id + ',' + pass
+        is_mqtt_conneted = false
+        serial.writeLine(cmd)
+        basic.pause(50)
+    }
+	/**
+     * 连接WIFI
+     * @param ssid ; eg: "WIFI"
+     * @param pass ; eg: "12345678"
+    */
+    //% block="连接WIFI 名称：$ssid 密码：$pass"
+    export function WIFI_connect(ssid: string, pass: string): void {
+        basic.pause(50)
+        let cmd: string = "AT+XMU_WIFI=" + ssid + ',' + pass
+        serial.writeLine(cmd)
+        basic.pause(50)
+    }
+	/**
+     * 初始化WIFI模块的串口
+     * @param tx ; eg: SerialPin.P1
+     * @param rx ; eg: SerialPin.P2
+    */
+    //% block="初始化WIFI模块的串口 TX：$tx RX：$rx"
+    export function WIFI_init(tx: SerialPin, rx: SerialPin): void {
+        serial.redirect(
+            tx,
+            rx,
+            BaudRate.BaudRate115200
+        )
+        basic.pause(100)
     }
 }
 
 
 
 
-enum PingUnit {
+enum SonicPingUnit {
     //% block="厘米"
     Centimeters,
     //% block="微秒"
@@ -571,7 +569,7 @@ namespace sensors {
      * @param maxCmDistance maximum distance in centimeters (default is 500)
      */
     //% blockId=sonar_ping block="超声波| trig %trig|echo %echo|单位 %unit"
-    export function ping(trig: DigitalPin, echo: DigitalPin, unit: PingUnit, maxCmDistance = 500): number {
+    export function ping(trig: DigitalPin, echo: DigitalPin, unit: SonicPingUnit, maxCmDistance = 500): number {
         // send pulse
         pins.setPull(trig, PinPullMode.PullNone);
         pins.digitalWritePin(trig, 0);
@@ -584,8 +582,8 @@ namespace sensors {
         const d = pins.pulseIn(echo, PulseValue.High, maxCmDistance * 58);
 
         switch (unit) {
-            case PingUnit.Centimeters: return Math.idiv(d, 58);
-            case PingUnit.Inches: return Math.idiv(d, 148);
+            case SonicPingUnit.Centimeters: return Math.idiv(d, 58);
+            case SonicPingUnit.Inches: return Math.idiv(d, 148);
             default: return d;
         }
     }
