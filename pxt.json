@@ -2,18 +2,28 @@
     "name": "OneNET",
     "version": "0.0.0",
     "description": "OneNET iOT by XMU",
+    "license": "MIT",
     "dependencies": {
         "core": "*",
-        "radio": "*"
+        "radio": "*",
+        "microphone": "*"
     },
     "files": [
         "README.md",
-        "main.ts"
+        "main.ts",
+        "shims.d.ts",
+        "enums.d.ts",
+        "ir.cpp",
+        "ReceiverIR.cpp",
+        "ReceiverIR.h",
+        "RemoteIR.h",
+        "TransmitterIR.cpp",
+        "TransmitterIR.h",
+        "NecIR.cpp"
     ],
     "testFiles": [
         "test.ts"
     ],
     "public": false,
-    "license": "MIT",
     "preferredEditor": "tsprj"
 }
